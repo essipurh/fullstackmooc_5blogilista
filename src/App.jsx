@@ -12,7 +12,6 @@ import loginService from './services/login'
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -29,16 +28,11 @@ const App = () => {
   }, [])
 
   const blogFormRef = useRef()
+  const notificationRef = useRef()
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedUser')
     setUser(null)
-  }
-
-  const notificationMessages = (messagesList, msgType) => {
-    const messagesString = messagesList.map(er => er.message).join(' ')
-    setNotification({ type: msgType, message: messagesString})
-    setTimeout(() => { setNotification(null) }, 5000)
   }
 
   const handleLogin = async (userLoginDetails) => {
@@ -49,19 +43,19 @@ const App = () => {
       )
       setUser(user)
     } catch (error) {
-      notificationMessages(Object.values(error.response.data), 'error')
+      notificationRef.current.notificationMessages(Object.values(error.response.data), 'error')
     }    
   }
 
   const createBlog = async (newBlogObject) => {
     try {
-      blogFormRef.current.toggleVisibility()
       const returnedBlog = await blogService.create(newBlogObject)
+      blogFormRef.current.toggleVisibility()
       setBlogs(blogs.concat(returnedBlog))
-      notificationMessages([{message:`A new blog ${returnedBlog.name} by ${returnedBlog.author} added`}], 'confirmation')
+      notificationRef.current.notificationMessages([{message:`A new blog ${returnedBlog.name} by ${returnedBlog.author} added`}], 'confirmation')
     } catch (error) {
       console.log(error)
-      notificationMessages(Object.values(error.response.data.error), 'error')
+      notificationRef.current.notificationMessages(Object.values(error.response.data.error), 'error')
     }
   }
 
@@ -70,12 +64,12 @@ const App = () => {
       {user === null
         ? <div>
             <h2>Login</h2>
-            <Notification notification={notification} />
+            <Notification ref={notificationRef} />
             <Login handleLogin={handleLogin} />
           </div>
         : <div>
             <h2>blogs</h2>
-            <Notification notification={notification} />
+            <Notification ref={notificationRef} />
             <User user={user} handleLogout={handleLogout}/>
             <Togglable buttonLabel="new blog" ref={blogFormRef}>
               <h2>create new</h2>
