@@ -1,8 +1,7 @@
 import { useState, useImperativeHandle, forwardRef} from 'react'
 
-const Notification = forwardRef((props, ref) => {
+const Notification = forwardRef((_, ref) => {
   const [notification, setNotification] = useState(null)
-  console.log(props);
 
   const notificationMessages = (messagesList, msgType) => {
     const messagesString = messagesList.map(er => er.message).join(' ')

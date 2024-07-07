@@ -52,7 +52,18 @@ const App = () => {
       const returnedBlog = await blogService.create(newBlogObject)
       blogFormRef.current.toggleVisibility()
       setBlogs(blogs.concat(returnedBlog))
-      notificationRef.current.notificationMessages([{message:`A new blog ${returnedBlog.name} by ${returnedBlog.author} added`}], 'confirmation')
+      notificationRef.current.notificationMessages([{message:`A new blog ${returnedBlog.title} by ${returnedBlog.author} added`}], 'confirmation')
+    } catch (error) {
+      console.log(error)
+      notificationRef.current.notificationMessages(Object.values(error.response.data.error), 'error')
+    }
+  }
+
+  const updateLikes = async (objectId, updatedBlogObject) => {
+    try {
+      const returnedBlog = await blogService.update(objectId, updatedBlogObject)
+      setBlogs(blogs.map(blog => blog.id !== returnedBlog.id ? blog : returnedBlog))
+      notificationRef.current.notificationMessages([{message:`${returnedBlog.title} by ${returnedBlog.author} liked.`}], 'confirmation')
     } catch (error) {
       console.log(error)
       notificationRef.current.notificationMessages(Object.values(error.response.data.error), 'error')
@@ -72,11 +83,10 @@ const App = () => {
             <Notification ref={notificationRef} />
             <User user={user} handleLogout={handleLogout}/>
             <Togglable buttonLabel="new blog" ref={blogFormRef}>
-              <h2>create new</h2>
               <BlogForm createBlog={createBlog}/>
             </Togglable>
             {blogs.map(blog =>
-              <Blog key={blog.id} blog={blog} />
+              <Blog key={blog.id} blog={blog} handleLike={updateLikes} />
             )}
           </div>
       }
