@@ -26,3 +26,9 @@
   border-width: 1px;
   margin-top: 5px;
 }
+
+.deleteButton {
+  background-color: lightskyblue;
+  border-radius: 5px;
+  border-color: lightskyblue;
+}

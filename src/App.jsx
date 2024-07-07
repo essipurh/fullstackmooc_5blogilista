@@ -14,9 +14,11 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+    (async () => {
+      const returnedBlogs = await blogService.getAll()
+      returnedBlogs.sort((blog1, blog2) => blog2.likes - blog1.likes)
+      setBlogs(returnedBlogs)
+    }) ();
   }, [])
 
   useEffect(() => {
@@ -62,8 +64,21 @@ const App = () => {
   const updateLikes = async (objectId, updatedBlogObject) => {
     try {
       const returnedBlog = await blogService.update(objectId, updatedBlogObject)
-      setBlogs(blogs.map(blog => blog.id !== returnedBlog.id ? blog : returnedBlog))
+      setBlogs(blogs.map(blog => blog.id !== returnedBlog.id ? blog : returnedBlog).sort((blog1, blog2) => blog2.likes - blog1.likes))
       notificationRef.current.notificationMessages([{message:`${returnedBlog.title} by ${returnedBlog.author} liked.`}], 'confirmation')
+    } catch (error) {
+      console.log(error)
+      notificationRef.current.notificationMessages(Object.values(error.response.data.error), 'error')
+    }
+  }
+
+  const deleteBlog = async (blogToBeDeleted) => {
+    if (!window.confirm(`Remove blog ${blogToBeDeleted.title} by ${blogToBeDeleted.author}?`)) { return }
+    try {
+      const response = await blogService.remove(blogToBeDeleted.id)
+      console.log(response)
+      setBlogs(blogs.filter(blog => blog.id !== blogToBeDeleted.id))
+      notificationRef.current.notificationMessages([{message:`${blogToBeDeleted.title} by ${blogToBeDeleted.author} deleted.`}], 'confirmation')
     } catch (error) {
       console.log(error)
       notificationRef.current.notificationMessages(Object.values(error.response.data.error), 'error')
@@ -86,7 +101,7 @@ const App = () => {
               <BlogForm createBlog={createBlog}/>
             </Togglable>
             {blogs.map(blog =>
-              <Blog key={blog.id} blog={blog} handleLike={updateLikes} />
+              <Blog key={blog.id} blog={blog} handleLike={updateLikes} handleDelete={deleteBlog} />
             )}
           </div>
       }
