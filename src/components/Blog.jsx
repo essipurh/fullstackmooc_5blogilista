@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 const BlogRow = ({ displayBlogDetails, blog, addLike }) => (
   <div style={displayBlogDetails}>
@@ -19,7 +19,7 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
   const user = JSON.parse(window.localStorage.getItem('loggedUser'))
 
   const addLike = () => {
-    const updatedBlogObject = { 
+    const updatedBlogObject = {
       title: blog.title,
       author: blog.author,
       url: blog.url,
@@ -31,16 +31,16 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
 
   const deleteBlog = () => handleDelete(blog)
   const sameUser = user && blog.user && (blog.user.username === user.username) // ei paras, koska  mitä jos virheellisesti kaksi samannmistä useria.. id olisi parempi
-  
+
   return (
-  <div className="blogPost">
-    {blog.title} {blog.author}
-    <button onClick={() => setVisible(!visible)}>{visible ? 'hide' : 'view'}</button>
-    <BlogRow displayBlogDetails={displayBlogDetails} blog={blog} addLike={addLike} deleteBlog={deleteBlog} />
-    <div>
-      {sameUser && <button className="deleteButton" onClick={deleteBlog}>delete</button>}
+    <div className="blogPost">
+      {blog.title} {blog.author}
+      <button onClick={() => setVisible(!visible)}>{visible ? 'hide' : 'view'}</button>
+      <BlogRow displayBlogDetails={displayBlogDetails} blog={blog} addLike={addLike} deleteBlog={deleteBlog} />
+      <div>
+        {sameUser && <button className="deleteButton" onClick={deleteBlog}>delete</button>}
+      </div>
     </div>
-  </div>  
-)}
+  )}
 
 export default Blog
