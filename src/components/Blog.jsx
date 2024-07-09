@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 const BlogRow = ({ displayBlogDetails, blog, addLike }) => (
-  <div style={displayBlogDetails}>
+  <div style={displayBlogDetails} className="blogDetails">
     <div>{blog.url}</div>
     <div>
       likes {blog.likes}
